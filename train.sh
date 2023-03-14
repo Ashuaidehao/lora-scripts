@@ -48,6 +48,28 @@ enable_locon_train=0 # enable LoCon train | 启用 LoCon 训练 启用后 networ
 conv_dim=4           # conv dim | 类似于 network_dim，推荐为 4
 conv_alpha=4         # conv alpha | 类似于 network_alpha，可以采用与 conv_dim 一致或者更小的值
 
+# 脚本参数获取
+while getopts "i:m:o:" arg #选项后面的冒号表示该选项需要参数
+do
+  case $arg in
+    i)
+      echo "inputPath is:$OPTARG"
+      train_data_dir="$OPTARG"
+      ;;
+    m)
+      echo "model is:$OPTARG" #参数存在$OPTARG
+      pretrained_model="$OPTARG"
+      ;; 
+    o)
+      echo "outputPath is: $OPTARG"
+      outputPath="$OPTARG" 
+      ;;
+    ?)  #当有不认识的选项的时候arg为?
+      echo "unkonw argument"
+      exit 1 
+  esac
+done
+
 # ============= DO NOT MODIFY CONTENTS BELOW | 请勿修改下方内容 =====================
 export HF_HOME="huggingface"
 export TF_CPP_MIN_LOG_LEVEL=3
@@ -80,7 +102,7 @@ accelerate launch --num_cpu_threads_per_process=8 "./sd-scripts/train_network.py
   --enable_bucket \
   --pretrained_model_name_or_path=$pretrained_model \
   --train_data_dir=$train_data_dir \
-  --output_dir="./output" \
+  --output_dir=$outputPath \
   --logging_dir="./logs" \
   --resolution=$resolution \
   --network_module=$network_module \
